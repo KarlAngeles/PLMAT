@@ -11,6 +11,7 @@ const options = {
       },
       async authorize(credentials) {
         const user = crendentials => {
+          //return {username: 'test'}
           return null
         }
 
