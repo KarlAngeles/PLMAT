@@ -18,6 +18,7 @@ const options = {
       }
     })
   ],
+  site: '/',
   pages: {
     signIn: '/signin',
 
@@ -26,3 +27,5 @@ const options = {
     jwt: true,
   }
 }
+
+export default (req, res) => NextAuth(req, res, options)
