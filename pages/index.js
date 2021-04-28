@@ -6,31 +6,23 @@ import { signIn, signOut, useSession } from 'next-auth/client'
 export default function Home() {
   const [session, loading] = useSession();
 
-  if (session) {
+  if (typeof window !== 'undefined' && loading) return null
+
+  if (!session) {
     return (
-      <div>
-        <Head>
-          <title>PLM Admission Test (PLMAT)</title>
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-        <main>
-          testing
-        </main>
-      </div>
+      <Layout>
+        Not signed in <br />
+        <button onClick={signIn}>Log In</button>
+      </Layout>
     )
   }
 
   return (
+    <Layout>
+      testing
+    </Layout>
     <div>
-      <Head>
-        <title>PLM Admission Test (PLMAT)</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        Not signed in <br />
-        <button onClick={signIn}>Log In</button>
-      </main>
-    </div>
   )
+
 
 }
