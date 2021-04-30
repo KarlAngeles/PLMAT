@@ -1,10 +1,17 @@
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/client'
+import { useRouter } from 'next/router'
+import { signIn, useSession } from 'next-auth/client'
 
-export default function SignIn({ csrfToken }) {
+export default function SignIn() {
+  const [session, loading] = useSession()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const router = useRouter()
+
+  if (session) {
+    router.push('/')
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -18,7 +25,6 @@ export default function SignIn({ csrfToken }) {
       <h1 class="text-gray-200 text-center font-extrabold -mt-3 text-3xl">PLMAT Login</h1>
       <div class="container py-5 max-w-md mx-auto">
         <form onSubmit={handleSubmit}>
-          <input name='csrfToken' type='hidden' defaultValue={csrfToken}/>
           <div class="mb-4">
             <input 
               placeholder="Username"
