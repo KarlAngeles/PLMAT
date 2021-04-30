@@ -13,7 +13,7 @@ const options = {
       },
       async authorize(credentials) {
         try {
-          return { name: 'foo' }
+          return { username: 'foo', eligible: true }
 
           //const url = 'http://localhost:3001/api/plmat/login'
           //const response = await axios.post(url, credentials)
@@ -27,6 +27,7 @@ const options = {
             //return response.data
           //}
           //return null
+          //dont need promise for async
           //return Promise.reject(new Error('Error with credentials'))
         } catch(e) {
           throw new Error('Error in User Auth')
@@ -40,6 +41,16 @@ const options = {
   },
   session: {
     jwt: true,
+  },
+  callbacks: {
+    jwt: async (token, user, account, profile, isNewUser) => {
+      user && (token.user = user)
+      return token
+    },
+    session: async (session, token) => {
+      session.user = token.user
+      return session
+    }
   }
 }
 
