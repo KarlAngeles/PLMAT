@@ -1,14 +1,35 @@
 import { useState } from 'react'
 import { getSession } from 'next-auth/client'
 import Layout from '../components/layout'
+import ButtonGroup from '../components/buttongroup'
+import Question from '../components/question'
 import Link from 'next/link'
 
-const App = ({ questions }) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0)
+const App = ({ content }) => {
+  /*
+   * {
+   *  1: a
+   *  2: b
+   * }
+  */
+  const [answers, setAnswers] = useState({})
+  const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1)
+
+  const addToAnswers = (choice) => {
+    const tempAnswers = answers
+    tempAnswers[currentQuestionNumber] = choice
+    setAnswers(tempAnswers)
+    console.log(answers)
+  }
+
+  const singleContent = () => {
+    return content.[currentQuestionNumber]
+  }
 
   return (
     <Layout>
-      {questions}
+      <ButtonGroup setCurrentQuestionNumber={setCurrentQuestionNumber}/>
+      <Question content={singleContent()} addToAnswers={addToAnswers}/>
     </Layout>
   )
 }
@@ -33,12 +54,34 @@ export async function getServerSideProps(context) {
   }
 
   // request from express server optimized questions
-  // just dummy data atm
-  const questions = 'what is your name?'
+  // dummy data
+  const content = {
+    1: {
+      prompt: 'what is your name?',
+      choice1: 'foo',
+      choice2: 'bar',
+      choice3: 'baz',
+      choice4: 'qurt'
+    },
+    2: {
+      prompt: 'what is your age?',
+      choice1: '10',
+      choice2: '12',
+      choice3: '14',
+      choice4: '16'
+    },
+    3: {
+      prompt: 'what is your hair color?',
+      choice1: 'black',
+      choice2: 'blue',
+      choice3: 'yellow',
+      choice4: 'red'
+    }
+  }
 
   return {
     props: { 
-      questions, 
+      content, 
       session 
     }
   }
