@@ -6,7 +6,7 @@ First, clone the repository:
 ```
 git clone https://github.com/KarlAngeles/plmat.git
 ```
-Once downloaded, open the terminal in the project directory, and install dependencies with:
+Once downloaded, open a terminal in the project directory, and install dependencies with:
 ```
 npm install
 ```

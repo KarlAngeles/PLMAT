@@ -44,7 +44,23 @@ const options = {
   },
   callbacks: {
     jwt: async (token, user, account, profile, isNewUser) => {
-      user && (token.user = user)
+      // this is where session object can be mutated
+      //- after user finished exam, do a update request to server, that changes the user's eligibility to take the exam again
+      //- after making the request, call getSession to refresh the session value
+      console.log(token, 'logging from jwt callback')
+      
+      if (user) {
+        token.user = user
+      }
+
+      if (token.user) {
+        //const url = 'http://localhost:3001/api/plmat/eligible'
+        //const response = await axios.get(url)
+        //token.user.eligible = response.data.eligible
+        token.user.eligible = !token.user.eligible
+      }
+      //token.user.eligible = response.data.eligible
+      //user && (token.user = user)
       return token
     },
     session: async (session, token) => {

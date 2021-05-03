@@ -9,8 +9,11 @@ export default function SignIn() {
   const [error, setError] = useState('')
   const router = useRouter()
 
+  if (typeof window !== 'undefined' && loading) return null
+
   if (session) {
     router.push('/')
+    return null
   }
 
   const handleSubmit = (e) => {

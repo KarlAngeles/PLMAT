@@ -53,6 +53,18 @@ export async function getServerSideProps(context) {
     }
   }
 
+  if (session.user.eligible == false) {
+    return {
+      props: {},
+      redirect: {
+        destination: '/',
+        permanent: true
+      }
+    }
+  }
+
+  console.log(session)
+
   // request from express server optimized questions
   // dummy data
   const content = {
