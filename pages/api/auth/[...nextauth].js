@@ -13,21 +13,16 @@ const options = {
       },
       async authorize(credentials) {
         try {
-          return { username: 'foo', eligible: true }
-
-          //const url = 'http://localhost:3001/api/plmat/login'
-          //const response = await axios.post(url, credentials)
+          const url = 'http://localhost:3001/api/plmat/login'
+          const response = await axios.post(url, credentials)
+          console.log('logging from authorize callback', response.data)
+          return response.data
 
           // Will verify from express server, then server will return an access token that will be saved to 
           // user session, which will be sent to every subsequent request to api 
           
-          // response status == 200 
-          //if (response) {
-            //console.log(response.data)
-            //return response.data
-          //}
-          //return null
           //dont need promise for async
+          //this is for displaying error inside the login component
           //return Promise.reject(new Error('Error with credentials'))
         } catch(e) {
           throw new Error('Error in User Auth')
@@ -39,28 +34,43 @@ const options = {
   pages: {
     signIn: '/login',
   },
+  secret: process.env.SECRET,
+  jwt: {
+    secret: process.env.TOKEN_SECRET,
+  },
   session: {
     jwt: true,
+    maxAge: 30 * 24 * 60 * 60
   },
   callbacks: {
     jwt: async (token, user, account, profile, isNewUser) => {
       // this is where session object can be mutated
       //- after user finished exam, do a update request to server, that changes the user's eligibility to take the exam again
       //- after making the request, call getSession to refresh the session value
-      console.log(token, 'logging from jwt callback')
       
       if (user) {
         token.user = user
       }
 
+
       if (token.user) {
-        //const url = 'http://localhost:3001/api/plmat/eligible'
-        //const response = await axios.get(url)
-        //token.user.eligible = response.data.eligible
-        token.user.eligible = !token.user.eligible
+        // need to limit api calls, as this callback is called very often
+        try {
+          const url = 'http://localhost:3001/api/plmat/eligible'
+          const response = await axios.get(url, {
+            headers: {
+              // under current system setup if backend returns error code
+              // authentication won't go through
+              Authorization: 'Bearer ' + token.user.accessToken
+            }
+          })
+
+          token.user.eligible = response.data.eligible
+
+        } catch (e) {
+          throw new Error('Error in User Auth')
+        }
       }
-      //token.user.eligible = response.data.eligible
-      //user && (token.user = user)
       return token
     },
     session: async (session, token) => {

@@ -3,7 +3,6 @@ import { getSession } from 'next-auth/client'
 import Layout from '../components/layout'
 import ButtonGroup from '../components/buttongroup'
 import Question from '../components/question'
-import Link from 'next/link'
 
 const App = ({ content }) => {
   /*
@@ -41,6 +40,7 @@ export async function getServerSideProps(context) {
 
   // need for next-auth
   const session = await getSession(context)
+  console.log('logging from app page', session)
 
   // source: https://nextjs.org/docs/authentication 
   if (!session) {
@@ -53,17 +53,15 @@ export async function getServerSideProps(context) {
     }
   }
 
-  if (session.user.eligible == false) {
+  if (session.user.eligible === false) {
     return {
       props: {},
       redirect: {
         destination: '/',
-        permanent: true
+        permanent: false
       }
     }
   }
-
-  console.log(session)
 
   // request from express server optimized questions
   // dummy data
