@@ -22,8 +22,8 @@ const App = ({ content, time_records }) => {
   }
 
   const submitHandler = async () => {
-    try {
 
+    try {
       if (currentExam + 1 >= content.length) {
         const res = await axios.post('http://localhost:3001/api/plmat/finished_exam', {
           data: { username: session.user.username },
@@ -86,7 +86,7 @@ const App = ({ content, time_records }) => {
               <div class="flex-none flex justify-end w-1/3">
                 <p class="flex-auto font-custom text-xl font-semibold text-gray-800">Remaining Time: </p>
                 <div class="flex-none mx-2">
-                  <Timer givenTime={content[currentExam].total_time} time_start={timeRecords[currentExam]} />
+                  <Timer givenTime={content[currentExam].total_time} time_start={timeRecords[currentExam]} submitHandler={submitHandler}/>
                 </div>
               </div>
             </div>

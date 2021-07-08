@@ -52,7 +52,7 @@ export default function Home({ session }) {
             </div>
           </div>
 
-          <div class="pt-16 w-1/2">
+          <div class="w-1/2">
             <img src="/welcome.png" alt="" class="object-contain md:object-cover" />
           </div>
 

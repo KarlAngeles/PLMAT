@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 
-export default function Timer({ givenTime, time_start }) {
+export default function Timer({ givenTime, time_start, submitHandler }) {
   // these lines run on every frame
   const millis = Math.floor((Date.now() - time_start) / 1000)
   const convertedTime = (givenTime * 60) - millis
@@ -11,35 +11,21 @@ export default function Timer({ givenTime, time_start }) {
 
   const intervalRef = useRef()
   intervalRef.current = timeLeft
-  //console.log('time left: ' + timeLeft)
-  //console.log('minutes left: ' + minutes)
-  //console.log('seconds left: ' + seconds)
 
-  const calculateTimeLeft = () => {
+  const calculateTimeLeft = async () => {
     if (intervalRef.current > 0) {
       setTimeLeft(c => c - 1)
-      //const m = Math.floor(timeLeft / 60).toString().padStart(2,'0')
-      //const s = Math.floor(timeLeft % 60).toString().padStart(2, '0')
 
       console.log('time left:' + intervalRef.current)
       setMinutes(() => Math.floor(intervalRef.current / 60).toString().padStart(2,'0'))
       setSeconds(() => Math.floor(intervalRef.current % 60).toString().padStart(2, '0'))
 
-      //formatTimeLeft()
     } else {
       setTimeLeft(0)
+      // runs submit handler from app page
+      await submitHandler()
     }
   }
-
-  //const formatTimeLeft = () => {
-    //if (timeLeft == 0) return
-
-    //const m = Math.floor(timeLeft / 60).toString().padStart(2,'0')
-    //const s = Math.floor(timeLeft % 60).toString().padStart(2, '0')
-
-    //setMinutes(m)
-    //setSeconds(s)
-  //}
 
   useEffect(() => {
     console.log('logging from 1st useEffect')
@@ -48,7 +34,6 @@ export default function Timer({ givenTime, time_start }) {
     setTimeLeft(convertedTime)
   }, [time_start])
   
-  // This isn't accurate
   useEffect(() => {
     const interval = setInterval(() => {
       calculateTimeLeft()
