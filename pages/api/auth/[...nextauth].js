@@ -40,7 +40,7 @@ const options = {
   },
   session: {
     jwt: true,
-    maxAge: 30 * 24 * 60 * 60
+    maxAge: 24 * 60 * 60
   },
   callbacks: {
     jwt: async (token, user, account, profile, isNewUser) => {
@@ -52,12 +52,16 @@ const options = {
         token.user = user
       }
 
-
-      if (token.user) {
+      // also need to add handling for has taken exam property
+      
+      // need to use another condition
+      if (token.user && token.user.questionnaire.length == 0) {
         // need to limit api calls, as this callback is called very often
         try {
-          const url = 'http://localhost:3001/api/plmat/eligible'
+          const url = 'http://localhost:3001/api/plmat/refresh'
+          console.log('logging from jwt callback')
           const response = await axios.get(url, {
+            data: {username: token.user.username},
             headers: {
               // under current system setup if backend returns error code
               // authentication won't go through
@@ -65,12 +69,39 @@ const options = {
             }
           })
 
-          token.user.eligible = response.data.eligible
+          // need to check if response.user exists
+          token.user.questionnaire = response.data.questionnaire
 
         } catch (e) {
+          console.log(e)
           throw new Error('Error in User Auth')
         }
       }
+
+      if (token.user && token.user.questionnaire.length != 0) {
+        try {
+          const url = 'http://localhost:3001/api/plmat/refresh'
+          console.log('logging from current exam callback')
+          const response = await axios.get(url, {
+            data: {username: token.user.username},
+            headers: {
+              // under current system setup if backend returns error code
+              // authentication won't go through
+              Authorization: 'Bearer ' + token.user.accessToken
+            }
+          })
+
+          // need to check if response.user exists
+          console.log(response.data)
+          token.user.current_exam = response.data.current_exam
+          token.user.has_taken_exam = response.data.has_taken_exam
+
+        } catch (e) {
+          console.log(e)
+          throw new Error('Error in User Auth')
+        }
+      }
+
       return token
     },
     session: async (session, token) => {
